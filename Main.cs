@@ -18,7 +18,7 @@ namespace Middle
         public Main()
         {
             InitializeComponent();
-            textBox1.TextChanged += textBox1_TextChanged;
+            
             richTextBox2.TextChanged += richTextBox2_TextChanged;
             richTextBox2.Text = @"// Welcome to Meddle!
                 // numba  = int
@@ -26,7 +26,8 @@ namespace Middle
                 // if you want to print out use reveal, for example
 
                 text x = ""If in doubt..Sir, may i go out?"";
-                    reveal(x);";
+                   reveal(x);";
+            UpdateLineNumbers();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -73,7 +74,7 @@ namespace Middle
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void richTextBox2_TextChanged(object sender, EventArgs e)
         {
             UpdateLineNumbers();
         }
@@ -244,10 +245,6 @@ namespace Middle
         }
 
 
-        private void richTextBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void button9_Click(object sender, EventArgs e)
         {

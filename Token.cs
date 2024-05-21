@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 public enum TokenType
 {
-    NUMBA,      // integer
-    TEXT,       // Renamed from STRING
-    IDENTIFIER,
-    NUMBER,
-    CHAR,       // Renamed from TEXT
-    REVEAL,     // printout
+    NUMBA,
+    TEXT,
+    REVEAL,
     ASSIGN,
     SEMICOLON,
     LPAREN,
     RPAREN,
-    COMMENT,
+    NUMBER,
+    IDENTIFIER,
+    LETTER_ONLY,
     UNKNOWN
 }
 
@@ -35,6 +34,6 @@ public class Token
 
     public override string ToString()
     {
-        return $"{Type}({Value})";
+        return $"{Type}('{Value}', Line {LineNumber})";
     }
 }

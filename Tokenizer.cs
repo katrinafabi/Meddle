@@ -15,7 +15,10 @@ public class Tokenizer
         foreach (Match match in tokenPatterns.Matches(input))
         {
             string value = match.Value.Trim();
+
             if (value.StartsWith("//")) continue; // Ignore comments
+
+            // Extracting tokens
             if (value == "numba")
                 tokens.Add(new Token(TokenType.NUMBA, value, lineNumber));
             else if (value == "text")
