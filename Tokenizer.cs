@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Diagnostics.Eventing.Reader;
 
 public class Tokenizer
 {
-    private static readonly Regex tokenPatterns = new Regex(@"\s*(numba|text|reveal|=|;|\(|\)|[a-zA-Z_]\w*|\d+|""[^""]*""|\/\/.*$)\s*");
+    private static readonly Regex tokenPatterns = new Regex(@"\s*(numba|text|reveal|=|;|\(|\)|[a-zA-Z_]\w*|\d+|""[^""]*"")|//.*$", RegexOptions.Multiline);
 
     public static List<Token> Tokenize(string input)
     {
@@ -17,10 +15,7 @@ public class Tokenizer
         foreach (Match match in tokenPatterns.Matches(input))
         {
             string value = match.Value.Trim();
-            if (value.StartsWith("//"))
-            {
-                continue;
-            }
+            if (value.StartsWith("//")) continue; // Ignore comments
             if (value == "numba")
                 tokens.Add(new Token(TokenType.NUMBA, value, lineNumber));
             else if (value == "text")
@@ -41,14 +36,12 @@ public class Tokenizer
                 tokens.Add(new Token(TokenType.TEXT, value.Trim('"'), lineNumber));
             else if (Regex.IsMatch(value, @"^[a-zA-Z_]\w*$"))
                 tokens.Add(new Token(TokenType.IDENTIFIER, value, lineNumber));
-            tokens.Add(new Token(TokenType.UNKNOWN, value, lineNumber));
+            else
+                tokens.Add(new Token(TokenType.UNKNOWN, value, lineNumber));
 
-            
             if (value.Contains("\n"))
                 lineNumber++;
         }
         return tokens;
     }
-
 }
-

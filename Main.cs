@@ -18,9 +18,15 @@ namespace Middle
         public Main()
         {
             InitializeComponent();
-            richTextBox2.TextChanged += textBox1_TextChanged;
-            richTextBox2.Text = "text x = \"Hello! Welcome to Earth\"; \n" +
-                    "reveal(x);";
+            textBox1.TextChanged += textBox1_TextChanged;
+            richTextBox2.TextChanged += richTextBox2_TextChanged;
+            richTextBox2.Text = @"// Welcome to Meddle!
+                // numba  = int
+                // text = string
+                // if you want to print out use reveal, for example
+
+                text x = ""If in doubt..Sir, may i go out?"";
+                    reveal(x);";
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -31,7 +37,7 @@ namespace Middle
             {
                 var tokens = Tokenizer.Tokenize(code);
                 var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2);
+                interpreter.Interpret(tokens, textBox2, textBox3);
             }
             catch (Exception ex)
             {
@@ -59,7 +65,7 @@ namespace Middle
             {
                 var tokens = Tokenizer.Tokenize(code);
                 var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2);
+                interpreter.Interpret(tokens, textBox2, textBox3);
             }
             catch (Exception ex)
             {
@@ -150,7 +156,7 @@ namespace Middle
                 else
                 {
                     var interpreter = new Interpreter();
-                    interpreter.Interpret(tokens, textBox2);
+                    interpreter.Interpret(tokens, textBox2, textBox3);
                 }
             }
             catch (Exception ex)
@@ -186,7 +192,7 @@ namespace Middle
                 else
                 {
                     var interpreter = new Interpreter();
-                    interpreter.Interpret(tokens, textBox2);
+                    interpreter.Interpret(tokens, textBox2, textBox3);
                 }
             }
             catch (Exception ex)
@@ -209,7 +215,7 @@ namespace Middle
             {
                 var tokens = Tokenizer.Tokenize(code);
                 var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2);
+                interpreter.Interpret(tokens, textBox2, textBox3);
             }
             catch (Exception ex)
             {
@@ -229,7 +235,7 @@ namespace Middle
             {
                 var tokens = Tokenizer.Tokenize(code);
                 var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2);
+                interpreter.Interpret(tokens, textBox2, textBox3);
             }
             catch (Exception ex)
             {
@@ -241,6 +247,13 @@ namespace Middle
         private void richTextBox2_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            StartPage startpageForm = new StartPage();
+            startpageForm.ShowDialog();
+            this.Hide();
         }
     }
 }
