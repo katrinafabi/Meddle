@@ -31,20 +31,20 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.runbtn = new System.Windows.Forms.Button();
+            this.outputbox = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.errorlist = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
+            this.run2btn = new System.Windows.Forms.Button();
+            this.debugbtn = new System.Windows.Forms.Button();
+            this.debug2btn = new System.Windows.Forms.Button();
+            this.stop2btn = new System.Windows.Forms.Button();
+            this.stopbtn = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.codebox = new System.Windows.Forms.RichTextBox();
             this.button10 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
@@ -57,30 +57,29 @@
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // button1
+            // runbtn
             // 
-            this.button1.BackColor = System.Drawing.Color.DarkSeaGreen;
-            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(593, 57);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(82, 45);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "RUN";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.runbtn.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.runbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.runbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.runbtn.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.runbtn.Location = new System.Drawing.Point(593, 57);
+            this.runbtn.Name = "runbtn";
+            this.runbtn.Size = new System.Drawing.Size(82, 45);
+            this.runbtn.TabIndex = 2;
+            this.runbtn.Text = "RUN";
+            this.runbtn.UseVisualStyleBackColor = false;
             // 
-            // textBox2
+            // outputbox
             // 
-            this.textBox2.BackColor = System.Drawing.Color.Silver;
-            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(680, 143);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(490, 436);
-            this.textBox2.TabIndex = 3;
+            this.outputbox.BackColor = System.Drawing.Color.Silver;
+            this.outputbox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.outputbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outputbox.Location = new System.Drawing.Point(680, 143);
+            this.outputbox.Multiline = true;
+            this.outputbox.Name = "outputbox";
+            this.outputbox.Size = new System.Drawing.Size(490, 436);
+            this.outputbox.TabIndex = 3;
             // 
             // button2
             // 
@@ -93,16 +92,16 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // textBox3
+            // errorlist
             // 
-            this.textBox3.BackColor = System.Drawing.Color.Silver;
-            this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox3.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox3.Location = new System.Drawing.Point(12, 614);
-            this.textBox3.Multiline = true;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(1158, 125);
-            this.textBox3.TabIndex = 6;
+            this.errorlist.BackColor = System.Drawing.Color.Silver;
+            this.errorlist.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.errorlist.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.errorlist.Location = new System.Drawing.Point(12, 614);
+            this.errorlist.Multiline = true;
+            this.errorlist.Name = "errorlist";
+            this.errorlist.Size = new System.Drawing.Size(1158, 125);
+            this.errorlist.TabIndex = 6;
             // 
             // button3
             // 
@@ -115,79 +114,79 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // button4
+            // run2btn
             // 
-            this.button4.BackColor = System.Drawing.Color.DarkSeaGreen;
-            this.button4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button4.BackgroundImage")));
-            this.button4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button4.FlatAppearance.BorderSize = 0;
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button4.Font = new System.Drawing.Font("Palatino Linotype", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(554, 58);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(43, 43);
-            this.button4.TabIndex = 8;
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.run2btn.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.run2btn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("run2btn.BackgroundImage")));
+            this.run2btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.run2btn.FlatAppearance.BorderSize = 0;
+            this.run2btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.run2btn.Font = new System.Drawing.Font("Palatino Linotype", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.run2btn.Location = new System.Drawing.Point(554, 58);
+            this.run2btn.Name = "run2btn";
+            this.run2btn.Size = new System.Drawing.Size(43, 43);
+            this.run2btn.TabIndex = 8;
+            this.run2btn.UseVisualStyleBackColor = false;
+            this.run2btn.Click += new System.EventHandler(this.run2btn_Click);
             // 
-            // button5
+            // debugbtn
             // 
-            this.button5.BackColor = System.Drawing.Color.LightSkyBlue;
-            this.button5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button5.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button5.Location = new System.Drawing.Point(432, 57);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(108, 46);
-            this.button5.TabIndex = 9;
-            this.button5.Text = "DEBUG";
-            this.button5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.debugbtn.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.debugbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.debugbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.debugbtn.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.debugbtn.Location = new System.Drawing.Point(432, 57);
+            this.debugbtn.Name = "debugbtn";
+            this.debugbtn.Size = new System.Drawing.Size(108, 46);
+            this.debugbtn.TabIndex = 9;
+            this.debugbtn.Text = "DEBUG";
+            this.debugbtn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.debugbtn.UseVisualStyleBackColor = false;
+            this.debugbtn.Click += new System.EventHandler(this.debugbtn_Click);
             // 
-            // button6
+            // debug2btn
             // 
-            this.button6.BackColor = System.Drawing.Color.SkyBlue;
-            this.button6.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button6.BackgroundImage")));
-            this.button6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button6.FlatAppearance.BorderSize = 0;
-            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button6.Font = new System.Drawing.Font("Palatino Linotype", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button6.Location = new System.Drawing.Point(418, 58);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(37, 44);
-            this.button6.TabIndex = 10;
-            this.button6.UseVisualStyleBackColor = false;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.debug2btn.BackColor = System.Drawing.Color.SkyBlue;
+            this.debug2btn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("debug2btn.BackgroundImage")));
+            this.debug2btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.debug2btn.FlatAppearance.BorderSize = 0;
+            this.debug2btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.debug2btn.Font = new System.Drawing.Font("Palatino Linotype", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.debug2btn.Location = new System.Drawing.Point(418, 58);
+            this.debug2btn.Name = "debug2btn";
+            this.debug2btn.Size = new System.Drawing.Size(37, 44);
+            this.debug2btn.TabIndex = 10;
+            this.debug2btn.UseVisualStyleBackColor = false;
+            this.debug2btn.Click += new System.EventHandler(this.debug2btn_Click);
             // 
-            // button7
+            // stop2btn
             // 
-            this.button7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.button7.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("button7.BackgroundImage")));
-            this.button7.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button7.FlatAppearance.BorderSize = 0;
-            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.Font = new System.Drawing.Font("Palatino Linotype", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button7.Location = new System.Drawing.Point(284, 59);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(43, 43);
-            this.button7.TabIndex = 12;
-            this.button7.UseVisualStyleBackColor = false;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
+            this.stop2btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.stop2btn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("stop2btn.BackgroundImage")));
+            this.stop2btn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.stop2btn.FlatAppearance.BorderSize = 0;
+            this.stop2btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.stop2btn.Font = new System.Drawing.Font("Palatino Linotype", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.stop2btn.Location = new System.Drawing.Point(284, 59);
+            this.stop2btn.Name = "stop2btn";
+            this.stop2btn.Size = new System.Drawing.Size(43, 43);
+            this.stop2btn.TabIndex = 12;
+            this.stop2btn.UseVisualStyleBackColor = false;
+            this.stop2btn.Click += new System.EventHandler(this.stop2btn_Click);
             // 
-            // button8
+            // stopbtn
             // 
-            this.button8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.button8.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button8.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button8.Location = new System.Drawing.Point(321, 58);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(82, 45);
-            this.button8.TabIndex = 11;
-            this.button8.Text = "STOP";
-            this.button8.UseVisualStyleBackColor = false;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
+            this.stopbtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.stopbtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.stopbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.stopbtn.Font = new System.Drawing.Font("Palatino Linotype", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.stopbtn.Location = new System.Drawing.Point(321, 58);
+            this.stopbtn.Name = "stopbtn";
+            this.stopbtn.Size = new System.Drawing.Size(82, 45);
+            this.stopbtn.TabIndex = 11;
+            this.stopbtn.Text = "STOP";
+            this.stopbtn.UseVisualStyleBackColor = false;
+            this.stopbtn.Click += new System.EventHandler(this.stopbtn_Click);
             // 
             // button9
             // 
@@ -208,7 +207,7 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Controls.Add(this.textBox1);
-            this.panel1.Controls.Add(this.richTextBox2);
+            this.panel1.Controls.Add(this.codebox);
             this.panel1.Controls.Add(this.button10);
             this.panel1.Location = new System.Drawing.Point(12, 109);
             this.panel1.Name = "panel1";
@@ -226,17 +225,17 @@
             this.textBox1.Size = new System.Drawing.Size(41, 432);
             this.textBox1.TabIndex = 20;
             // 
-            // richTextBox2
+            // codebox
             // 
-            this.richTextBox2.BackColor = System.Drawing.Color.Silver;
-            this.richTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextBox2.Font = new System.Drawing.Font("Palatino Linotype", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox2.Location = new System.Drawing.Point(41, 34);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(626, 432);
-            this.richTextBox2.TabIndex = 2;
-            this.richTextBox2.Text = "";
-            this.richTextBox2.TextChanged += new System.EventHandler(this.richTextBox2_TextChanged);
+            this.codebox.BackColor = System.Drawing.Color.Silver;
+            this.codebox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.codebox.Font = new System.Drawing.Font("Palatino Linotype", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.codebox.Location = new System.Drawing.Point(41, 34);
+            this.codebox.Name = "codebox";
+            this.codebox.Size = new System.Drawing.Size(626, 432);
+            this.codebox.TabIndex = 2;
+            this.codebox.Text = "";
+            this.codebox.TextChanged += new System.EventHandler(this.richTextBox2_TextChanged);
             // 
             // button10
             // 
@@ -295,20 +294,20 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(1182, 757);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.errorlist);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button13);
             this.Controls.Add(this.button14);
             this.Controls.Add(this.button9);
-            this.Controls.Add(this.button7);
-            this.Controls.Add(this.button8);
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.stop2btn);
+            this.Controls.Add(this.stopbtn);
+            this.Controls.Add(this.debug2btn);
+            this.Controls.Add(this.debugbtn);
+            this.Controls.Add(this.run2btn);
+            this.Controls.Add(this.runbtn);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.outputbox);
             this.Controls.Add(this.panel1);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.Name = "Main";
@@ -323,23 +322,23 @@
 
         #endregion
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button runbtn;
+        private System.Windows.Forms.TextBox outputbox;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox errorlist;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button run2btn;
+        private System.Windows.Forms.Button debugbtn;
+        private System.Windows.Forms.Button debug2btn;
+        private System.Windows.Forms.Button stop2btn;
+        private System.Windows.Forms.Button stopbtn;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Button button14;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.RichTextBox codebox;
         private System.Windows.Forms.TextBox textBox1;
     }
 }

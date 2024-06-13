@@ -10,45 +10,288 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-
 namespace Middle
 {
     public partial class Main : Form
     {
+        private HashSet<string> keywords = new HashSet<string> { "num", "chat", "display" };
+        private List<string> errors = new List<string>();
+        private Dictionary<string, (string type, string value)> variables = new Dictionary<string, (string type, string value)>();
+
         public Main()
         {
             InitializeComponent();
-            
-            richTextBox2.TextChanged += richTextBox2_TextChanged;
-            richTextBox2.Text = @"// Welcome to Meddle!
-                // numba  = int
-                // text = string
-                // if you want to print out use reveal, for example
-
-                text x = ""If in doubt..Sir, may i go out?"";
-                   reveal(x);";
-            UpdateLineNumbers();
+            runbtn.Click += runbtn_Click;
+            run2btn.Click += runbtn_Click;
+            debugbtn.Click += debugbtn_Click;
+            debug2btn.Click += debug2btn_Click;
+            stopbtn.Click += stopbtn_Click;
+            stop2btn.Click += stop2btn_Click;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void runbtn_Click(object sender, EventArgs e)
         {
-            string code = richTextBox2.Text;
+            errors.Clear();
+            variables.Clear();
+            errorlist.Text = "";
+            outputbox.Text = "";
 
+            string code = codebox.Text;
+            string[] lines = code.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i].Trim();
+                if (!line.EndsWith(";"))
+                {
+                    errors.Add($"Error: ; expected in line {i + 1}");
+                }
+            }
+
+            if (errors.Count == 0)
+            {
+                string[] statements = code.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string statement in statements)
+                {
+                    string trimmedStatement = statement.Trim();
+                    if (!string.IsNullOrEmpty(trimmedStatement))
+                    {
+                        ProcessStatement(trimmedStatement);
+                    }
+                }
+            }
+
+            DisplayErrors();
+        }
+
+        private void CheckForErrors()
+        {
+            errors.Clear();
+            variables.Clear();
+            errorlist.Text = "";
+
+            string code = codebox.Text;
+            string[] lines = code.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i].Trim();
+                if (!line.EndsWith(";"))
+                {
+                    errors.Add($"Error: ; expected in line {i + 1}");
+                }
+            }
+
+            if (errors.Count == 0)
+            {
+                string[] statements = code.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string statement in statements)
+                {
+                    string trimmedStatement = statement.Trim();
+                    if (!string.IsNullOrEmpty(trimmedStatement))
+                    {
+                        CheckStatementForErrors(trimmedStatement);
+                    }
+                }
+            }
+
+            DisplayErrors();
+        }
+
+        private void ProcessStatement(string statement)
+        {
+            if (statement.StartsWith("chat") || statement.StartsWith("num"))
+            {
+                string[] tokens = statement.Split(new[] { ' ' }, 3, StringSplitOptions.RemoveEmptyEntries);
+                if (tokens.Length != 3 || keywords.Contains(tokens[1]) || !tokens[2].StartsWith("="))
+                {
+                    if (keywords.Contains(tokens[1]))
+                    {
+                        errors.Add("Error: '" + tokens[1] + "' is a keyword and cannot be used as a variable name in statement: " + statement);
+                    }
+                    else
+                    {
+                        errors.Add("Error: Invalid syntax in statement: " + statement);
+                    }
+                    return;
+                }
+
+                string variableType = tokens[0];
+                string variableName = tokens[1];
+                string valueExpression = tokens[2].Substring(1).Trim();
+
+                string value = EvaluateExpression(valueExpression);
+
+                if (variableType == "num" && !int.TryParse(value, out _))
+                {
+                    errors.Add($"Error: Invalid value for num type in statement: {statement}");
+                }
+                else if (variableType == "chat" && (!value.StartsWith("\"") || !value.EndsWith("\"")))
+                {
+                    errors.Add($"Error: Invalid value for chat type in statement: {statement}");
+                }
+                else
+                {
+                    variables[variableName] = (variableType, value);
+                }
+            }
+            else if (statement.StartsWith("display"))
+            {
+                int startIndex = statement.IndexOf('(');
+                int endIndex = statement.IndexOf(')');
+                if (startIndex != -1 && endIndex != -1 && startIndex < endIndex)
+                {
+                    string[] variableNames = statement.Substring(startIndex + 1, endIndex - startIndex - 1).Split(',');
+                    foreach (string variableName in variableNames)
+                    {
+                        string trimmedVariableName = variableName.Trim();
+                        if (!variables.ContainsKey(trimmedVariableName))
+                        {
+                            errors.Add("Error: Undefined variable used in statement: " + statement);
+                        }
+                        else
+                        {
+                            DisplayOutput(variables[trimmedVariableName].value);
+                        }
+                    }
+                }
+                else
+                {
+                    errors.Add("Error: Invalid syntax in statement: " + statement);
+                }
+            }
+            else
+            {
+                errors.Add("Error: Invalid syntax in statement: " + statement);
+            }
+        }
+
+        private void CheckStatementForErrors(string statement)
+        {
+            if (statement.StartsWith("chat") || statement.StartsWith("num"))
+            {
+                string[] tokens = statement.Split(new[] { ' ' }, 3, StringSplitOptions.RemoveEmptyEntries);
+                if (tokens.Length != 3 || keywords.Contains(tokens[1]) || !tokens[2].StartsWith("="))
+                {
+                    if (keywords.Contains(tokens[1]))
+                    {
+                        errors.Add("Error: '" + tokens[1] + "' is a keyword and cannot be used as a variable name in statement: " + statement);
+                    }
+                    else
+                    {
+                        errors.Add("Error: Invalid syntax in statement: " + statement);
+                    }
+                }
+                else
+                {
+                    string variableType = tokens[0];
+                    string variableName = tokens[1];
+                    string valueExpression = tokens[2].Substring(1).Trim();
+
+                    string value = EvaluateExpression(valueExpression);
+
+                    if (variableType == "num" && !int.TryParse(value, out _))
+                    {
+                        errors.Add($"Error: Invalid value for num type in statement: {statement}");
+                    }
+                    else if (variableType == "chat" && (!value.StartsWith("\"") || !value.EndsWith("\"")))
+                    {
+                        errors.Add($"Error: Invalid value for chat type in statement: {statement}");
+                    }
+                    else
+                    {
+                        variables[variableName] = (variableType, value);
+                    }
+                }
+            }
+            else if (statement.StartsWith("display"))
+            {
+                int startIndex = statement.IndexOf('(');
+                int endIndex = statement.IndexOf(')');
+                if (startIndex != -1 && endIndex != -1 && startIndex < endIndex)
+                {
+                    string[] variableNames = statement.Substring(startIndex + 1, endIndex - startIndex - 1).Split(',');
+                    foreach (string variableName in variableNames)
+                    {
+                        string trimmedVariableName = variableName.Trim();
+                        if (!variables.ContainsKey(trimmedVariableName))
+                        {
+                            errors.Add("Error: Undefined variable used in statement: " + statement);
+                        }
+                    }
+                }
+                else
+                {
+                    errors.Add("Error: Invalid syntax in statement: " + statement);
+                }
+            }
+            else
+            {
+                errors.Add("Error: Invalid syntax in statement: " + statement);
+            }
+        }
+
+        private string EvaluateExpression(string expression)
+        {
+            expression = ReplaceVariablesInExpression(expression);
             try
             {
-                var tokens = Tokenizer.Tokenize(code);
-                var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2, textBox3);
+                var table = new DataTable();
+                table.Columns.Add("expression", typeof(string), expression);
+                DataRow row = table.NewRow();
+                table.Rows.Add(row);
+                return ((string)row["expression"]).ToString();
             }
-            catch (Exception ex)
+            catch
             {
-                textBox2.Text = ex.Message;
+                errors.Add($"Error: Invalid expression '{expression}'");
+                return "0";
             }
+        }
+
+        private string ReplaceVariablesInExpression(string expression)
+        {
+            foreach (var variable in variables)
+            {
+                if (variable.Value.type == "num")
+                {
+                    expression = expression.Replace(variable.Key, variable.Value.value);
+                }
+            }
+            return expression;
+        }
+
+        private void DisplayErrors()
+        {
+            errorlist.Text = string.Join(Environment.NewLine, errors);
+        }
+
+        private void DisplayOutput(string value)
+        {
+            if (value.StartsWith("\"") && value.EndsWith("\"") && value.Length > 2)
+            {
+                string word = value.Substring(1, value.Length - 2);
+                outputbox.AppendText(word + Environment.NewLine);
+            }
+            else
+            {
+                outputbox.AppendText(value + Environment.NewLine);
+            }
+        }
+
+        private void debugbtn_Click(object sender, EventArgs e)
+        {
+            CheckForErrors();
+        }
+
+        private void debug2btn_Click(object sender, EventArgs e)
+        {
+            CheckForErrors();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            textBox2.Text = string.Empty;
+            outputbox.Text = string.Empty;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -56,22 +299,6 @@ namespace Middle
             StartPage startpageForm = new StartPage();
             startpageForm.ShowDialog();
             this.Hide();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            string code = richTextBox2.Text;
-
-            try
-            {
-                var tokens = Tokenizer.Tokenize(code);
-                var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2, textBox3);
-            }
-            catch (Exception ex)
-            {
-                textBox2.Text = ex.Message;
-            }
         }
 
         private void richTextBox2_TextChanged(object sender, EventArgs e)
@@ -82,7 +309,7 @@ namespace Middle
         private void UpdateLineNumbers()
         {
             textBox1.Clear();
-            int linesCount = richTextBox2.Lines.Length;
+            int linesCount = codebox.Lines.Length;
             for (int i = 1; i <= linesCount; i++)
             {
                 textBox1.AppendText(i.ToString() + Environment.NewLine);
@@ -97,8 +324,8 @@ namespace Middle
         private void button13_Click(object sender, EventArgs e)
         {
             SaveFile();
-
         }
+
         private void SaveFile()
         {
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
@@ -109,11 +336,10 @@ namespace Middle
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string filePath = saveFileDialog.FileName;
-                    string code = richTextBox2.Text;
+                    string code = codebox.Text;
 
                     try
                     {
-
                         System.IO.File.WriteAllText(filePath, code);
                         MessageBox.Show("File saved successfully.");
                     }
@@ -127,130 +353,34 @@ namespace Middle
 
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
-            richTextBox2.ScrollToCaret();
+            codebox.ScrollToCaret();
         }
-        private void button5_Click(object sender, EventArgs e)
-        {
-            isDebugging = true;
-            string code = richTextBox2.Text;
-            try
-            {
-                var tokens = Tokenizer.Tokenize(code);
-                List<string> errorMessages = new List<string>();
-                foreach (var token in tokens)
-                {
-                    Console.WriteLine($"Token: {token.Value}, Type: {token.Type}, LineNumber: {token.LineNumber}");
-
-                    if (token.Type == TokenType.UNKNOWN)
-                    {
-                        errorMessages.Add($"Syntax error: Unknown statement at line {token.LineNumber}");
-                    }
-                }
-                if (errorMessages.Count > 0)
-                {
-                    foreach (string errorMessage in errorMessages)
-                    {
-                        textBox3.AppendText(errorMessage + Environment.NewLine);
-                    }
-                    MessageBox.Show("Syntax errors found. Code execution halted for debugging.");
-                }
-                else
-                {
-                    var interpreter = new Interpreter();
-                    interpreter.Interpret(tokens, textBox2, textBox3);
-                }
-            }
-            catch (Exception ex)
-            {
-                textBox3.Text = $"Error: {ex.Message}";
-            }
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            string code = richTextBox2.Text;
-            try
-            {
-                var tokens = Tokenizer.Tokenize(code);
-                List<string> errorMessages = new List<string>();
-                foreach (var token in tokens)
-                {
-                    Console.WriteLine($"Token: {token.Value}, Type: {token.Type}, LineNumber: {token.LineNumber}");
-
-                    if (token.Type == TokenType.UNKNOWN)
-                    {
-                        errorMessages.Add($"Syntax error: Unknown statement at line {token.LineNumber}");
-                    }
-                }
-                if (errorMessages.Count > 0)
-                {
-                    foreach (string errorMessage in errorMessages)
-                    {
-                        textBox3.AppendText(errorMessage + Environment.NewLine);
-                    }
-                    MessageBox.Show("Syntax errors found. Code execution halted for debugging.");
-                }
-                else
-                {
-                    var interpreter = new Interpreter();
-                    interpreter.Interpret(tokens, textBox2, textBox3);
-                }
-            }
-            catch (Exception ex)
-            {
-                textBox3.Text = $"Error: {ex.Message}";
-            }
-        }
-
-        private bool isDebugging = false;
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-            if (isDebugging)
-            {
-                isDebugging = false;
-                textBox3.Clear();
-            }
-            string code = richTextBox2.Text;
-            try
-            {
-                var tokens = Tokenizer.Tokenize(code);
-                var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2, textBox3);
-            }
-            catch (Exception ex)
-            {
-                textBox2.Text = ex.Message;
-            }
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            if (isDebugging)
-            {
-                isDebugging = false;
-                textBox3.Clear();
-            }
-            string code = richTextBox2.Text;
-            try
-            {
-                var tokens = Tokenizer.Tokenize(code);
-                var interpreter = new Interpreter();
-                interpreter.Interpret(tokens, textBox2, textBox3);
-            }
-            catch (Exception ex)
-            {
-                textBox2.Text = ex.Message;
-            }
-        }
-
-
 
         private void button9_Click(object sender, EventArgs e)
         {
             StartPage startpageForm = new StartPage();
             startpageForm.ShowDialog();
             this.Hide();
+        }
+
+        private void run2btn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ClearErrors()
+        {
+            errorlist.Text = "";
+        }
+
+        private void stopbtn_Click(object sender, EventArgs e)
+        {
+            ClearErrors();
+        }
+
+        private void stop2btn_Click(object sender, EventArgs e)
+        {
+            ClearErrors();
         }
     }
 }
