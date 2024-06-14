@@ -233,6 +233,10 @@ namespace Middle
 
         private string EvaluateExpression(string expression)
         {
+            if (expression.StartsWith("\"") && expression.EndsWith("\""))
+            {
+                return expression;
+            }
             expression = ReplaceVariablesInExpression(expression);
             try
             {
