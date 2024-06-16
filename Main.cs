@@ -14,7 +14,7 @@ namespace Middle
 {
     public partial class Main : Form
     {
-        private HashSet<string> keywords = new HashSet<string> { "num", "chat", "display" };
+        private HashSet<string> keywords = new HashSet<string> { "num", "chat", "display", "if", "else", "switch"};
         private List<string> errors = new List<string>();
         private Dictionary<string, (string type, string value)> variables = new Dictionary<string, (string type, string value)>();
 
@@ -39,29 +39,46 @@ namespace Middle
             string code = codebox.Text;
             string[] lines = code.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            for (int i = 0; i < lines.Length; i++)
-            {
-                string line = lines[i].Trim();
-                if (!line.EndsWith(";"))
-                {
-                    errors.Add($"Error: ; expected in line {i + 1}");
-                }
-            }
+            List<string> statements = ParseStatements(lines);
 
-            if (errors.Count == 0)
+            foreach (string statement in statements)
             {
-                string[] statements = code.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string statement in statements)
+                string trimmedStatement = statement.Trim();
+                if (!string.IsNullOrEmpty(trimmedStatement))
                 {
-                    string trimmedStatement = statement.Trim();
-                    if (!string.IsNullOrEmpty(trimmedStatement))
-                    {
-                        ProcessStatement(trimmedStatement);
-                    }
+                    ProcessStatement(trimmedStatement);
                 }
             }
 
             DisplayErrors();
+        }
+
+        private List<string> ParseStatements(string[] lines)
+        {
+            List<string> statements = new List<string>();
+            StringBuilder currentStatement = new StringBuilder();
+            int ifElseBlockDepth = 0;
+
+            foreach (string line in lines)
+            {
+                string trimmedLine = line.Trim();
+                if (trimmedLine.StartsWith("if") || trimmedLine.StartsWith("else"))
+                {
+                    ifElseBlockDepth++;
+                }
+                if (trimmedLine == "}")
+                {
+                    ifElseBlockDepth--;
+                }
+                currentStatement.AppendLine(trimmedLine);
+                if (ifElseBlockDepth == 0)
+                {
+                    statements.Add(currentStatement.ToString());
+                    currentStatement.Clear();
+                }
+            }
+
+            return statements;
         }
 
         private void CheckForErrors()
@@ -73,25 +90,14 @@ namespace Middle
             string code = codebox.Text;
             string[] lines = code.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            for (int i = 0; i < lines.Length; i++)
-            {
-                string line = lines[i].Trim();
-                if (!line.EndsWith(";"))
-                {
-                    errors.Add($"Error: ; expected in line {i + 1}");
-                }
-            }
+            List<string> statements = ParseStatements(lines);
 
-            if (errors.Count == 0)
+            foreach (string statement in statements)
             {
-                string[] statements = code.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string statement in statements)
+                string trimmedStatement = statement.Trim();
+                if (!string.IsNullOrEmpty(trimmedStatement))
                 {
-                    string trimmedStatement = statement.Trim();
-                    if (!string.IsNullOrEmpty(trimmedStatement))
-                    {
-                        CheckStatementForErrors(trimmedStatement);
-                    }
+                    CheckStatementForErrors(trimmedStatement);
                 }
             }
 
@@ -160,11 +166,58 @@ namespace Middle
                     errors.Add("Error: Invalid syntax in statement: " + statement);
                 }
             }
+            else if (statement.StartsWith("if"))
+            {
+                ProcessIfElseStatement(statement);
+            }
+           
             else
             {
                 errors.Add("Error: Invalid syntax in statement: " + statement);
             }
         }
+
+       
+
+        private void ProcessDeclarationStatement(string statement)
+         {
+              string[] tokens = statement.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+              if (tokens.Length != 3 || keywords.Contains(tokens[0]) || !tokens[1].All(char.IsLetter) || !tokens[2].StartsWith("="))
+           {
+        if (keywords.Contains(tokens[0]))
+        {
+            errors.Add("Error: '" + tokens[0] + "' is a keyword and cannot be used as a variable type in statement: " + statement);
+        }
+        else if (!tokens[1].All(char.IsLetter))
+        {
+            errors.Add("Error: Invalid variable name in statement: " + statement);
+        }
+        else
+        {
+            errors.Add("Error: Invalid syntax in statement: " + statement);
+        }
+        return;
+    }
+
+    string variableType = tokens[0];
+    string variableName = tokens[1];
+    string valueExpression = tokens[2].Substring(1).Trim();
+
+    string value = EvaluateExpression(valueExpression);
+
+    if (variableType == "num" && !int.TryParse(value, out _))
+    {
+        errors.Add($"Error: Invalid value for num type in statement: {statement}");
+    }
+    else if (variableType == "chat" && (!value.StartsWith("\"") || !value.EndsWith("\"")))
+    {
+        errors.Add($"Error: Invalid value for chat type in statement: {statement}");
+    }
+    else
+    {
+        variables[variableName] = (variableType, value);
+    }
+}
 
         private void CheckStatementForErrors(string statement)
         {
@@ -225,9 +278,69 @@ namespace Middle
                     errors.Add("Error: Invalid syntax in statement: " + statement);
                 }
             }
+            else if (statement.StartsWith("if"))
+            {
+                CheckIfElseStatementForErrors(statement);
+            }
             else
             {
                 errors.Add("Error: Invalid syntax in statement: " + statement);
+            }
+        }
+
+        private void ProcessIfElseStatement(string statement)
+        {
+            int ifIndex = statement.IndexOf("if");
+            int elseIndex = statement.IndexOf("else");
+            string condition = statement.Substring(ifIndex + 2, statement.IndexOf('{') - ifIndex - 2).Trim();
+            string ifBlock = statement.Substring(statement.IndexOf('{') + 1, elseIndex - statement.IndexOf('{') - 1).Trim();
+            string elseBlock = statement.Substring(statement.IndexOf('{', elseIndex) + 1, statement.LastIndexOf('}') - statement.IndexOf('{', elseIndex) - 1).Trim();
+
+            bool conditionResult = EvaluateCondition(condition);
+            List<string> statementsToProcess = conditionResult ? ParseStatements(ifBlock.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)) : ParseStatements(elseBlock.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
+
+            foreach (string stmt in statementsToProcess)
+            {
+                ProcessStatement(stmt.Trim());
+            }
+        }
+
+        private void CheckIfElseStatementForErrors(string statement)
+        {
+            int ifIndex = statement.IndexOf("if");
+            int elseIndex = statement.IndexOf("else");
+            string condition = statement.Substring(ifIndex + 2, statement.IndexOf('{') - ifIndex - 2).Trim();
+            string ifBlock = statement.Substring(statement.IndexOf('{') + 1, elseIndex - statement.IndexOf('{') - 1).Trim();
+            string elseBlock = statement.Substring(statement.IndexOf('{', elseIndex) + 1, statement.LastIndexOf('}') - statement.IndexOf('{', elseIndex) - 1).Trim();
+
+            if (!EvaluateCondition(condition))
+            {
+                errors.Add($"Error: Invalid condition '{condition}'");
+            }
+
+            List<string> statementsToCheck = ParseStatements(ifBlock.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)).Concat(ParseStatements(elseBlock.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))).ToList();
+
+            foreach (string stmt in statementsToCheck)
+            {
+                CheckStatementForErrors(stmt.Trim());
+            }
+        }
+
+        private bool EvaluateCondition(string condition)
+        {
+            condition = ReplaceVariablesInExpression(condition);
+            try
+            {
+                var table = new DataTable();
+                table.Columns.Add("condition", typeof(bool), condition);
+                DataRow row = table.NewRow();
+                table.Rows.Add(row);
+                return (bool)row["condition"];
+            }
+            catch
+            {
+                errors.Add($"Error: Invalid condition '{condition}'");
+                return false;
             }
         }
 
