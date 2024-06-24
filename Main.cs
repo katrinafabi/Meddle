@@ -14,7 +14,7 @@ namespace Middle
 {
     public partial class Main : Form
     {
-        private HashSet<string> keywords = new HashSet<string> { "num", "chat", "display", "if", "else", "switch"};
+        private HashSet<string> keywords = new HashSet<string> { "num", "chat", "display", "if", "else", "switch", "for", "loop"};
         private List<string> errors = new List<string>();
         private Dictionary<string, (string type, string value)> variables = new Dictionary<string, (string type, string value)>();
 
@@ -52,6 +52,7 @@ namespace Middle
 
             DisplayErrors();
         }
+
 
         private List<string> ParseStatements(string[] lines)
         {
@@ -170,7 +171,14 @@ namespace Middle
             {
                 ProcessIfElseStatement(statement);
             }
-           
+            else if (statement.StartsWith("for"))
+            {
+                ProcessForLoopStatement(statement);
+            }
+            else if (statement.StartsWith("loop"))
+            {
+                ProcessLoopStatement(statement);
+            }
             else
             {
                 errors.Add("Error: Invalid syntax in statement: " + statement);
@@ -287,6 +295,92 @@ namespace Middle
                 errors.Add("Error: Invalid syntax in statement: " + statement);
             }
         }
+
+        private void ProcessForLoopStatement(string statement)
+        {
+            int startIndex = statement.IndexOf('(');
+            int endIndex = statement.IndexOf(')');
+
+            if (startIndex == -1 || endIndex == -1 || endIndex <= startIndex)
+            {
+                errors.Add("Error: Invalid for loop syntax: " + statement);
+                return;
+            }
+
+            string condition = statement.Substring(startIndex + 1, endIndex - startIndex - 1).Trim();
+
+            string[] parts = condition.Split(new[] { "<=" }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length != 2)
+            {
+                errors.Add("Error: Invalid for loop condition: " + condition);
+                return;
+            }
+
+            string xExpression = parts[0].Trim();
+            string yExpression = parts[1].Trim();
+
+            string xValue = EvaluateExpression(xExpression);
+            string yValue = EvaluateExpression(yExpression);
+
+            if (!int.TryParse(xValue, out int x) || !int.TryParse(yValue, out int y))
+            {
+                errors.Add("Error: Invalid numerical values in for loop condition: " + condition);
+                return;
+            }
+
+            while (x <= y)
+            {
+                DisplayOutput(x.ToString()); 
+                x++; 
+            }
+        }
+
+        private void ProcessLoopStatement(string statement)
+        {
+            statement = statement.Trim();
+
+            if (!statement.StartsWith("loop"))
+            {
+                errors.Add("Error: Invalid syntax in statement: " + statement);
+                return;
+            }
+
+            int startIndex = statement.IndexOf('(');
+            int endIndex = statement.IndexOf(')');
+
+            if (startIndex == -1 || endIndex == -1 || endIndex <= startIndex)
+            {
+                errors.Add("Error: Invalid syntax in loop statement: " + statement);
+                return;
+            }
+
+            string loopExpression = statement.Substring(startIndex + 1, endIndex - startIndex - 1).Trim();
+
+            // Handle the increment operation
+            if (loopExpression.EndsWith("++"))
+            {
+                string variableName = loopExpression.Replace("++", "").Trim();
+
+                if (variables.ContainsKey(variableName) && variables[variableName].type == "num")
+                {
+                    int currentValue = int.Parse(variables[variableName].value);
+                    currentValue++; // Increment the variable's value
+                    variables[variableName] = ("num", currentValue.ToString());
+                    // No need to display the incremented value here
+                }
+                else
+                {
+                    errors.Add("Error: Undefined or invalid variable in loop statement: " + statement);
+                }
+            }
+            else
+            {
+                errors.Add("Error: Invalid expression in loop statement: " + statement);
+            }
+        }
+
+
 
         private void ProcessIfElseStatement(string statement)
         {
