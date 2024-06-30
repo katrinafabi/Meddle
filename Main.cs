@@ -59,20 +59,33 @@ namespace Middle
             List<string> statements = new List<string>();
             StringBuilder currentStatement = new StringBuilder();
             int ifElseBlockDepth = 0;
+            int switchBlockDepth = 0;
 
             foreach (string line in lines)
             {
                 string trimmedLine = line.Trim();
+
                 if (trimmedLine.StartsWith("if") || trimmedLine.StartsWith("else"))
                 {
                     ifElseBlockDepth++;
                 }
-                if (trimmedLine == "}")
+                else if (trimmedLine.StartsWith("switch"))
+                {
+                    switchBlockDepth++;
+                }
+
+                if (trimmedLine == "}" && ifElseBlockDepth > 0)
                 {
                     ifElseBlockDepth--;
                 }
+                else if (trimmedLine == "}" && switchBlockDepth > 0)
+                {
+                    switchBlockDepth--;
+                }
+
                 currentStatement.AppendLine(trimmedLine);
-                if (ifElseBlockDepth == 0)
+
+                if (ifElseBlockDepth == 0 && switchBlockDepth == 0)
                 {
                     statements.Add(currentStatement.ToString());
                     currentStatement.Clear();
@@ -81,6 +94,7 @@ namespace Middle
 
             return statements;
         }
+
 
         private void CheckForErrors()
         {
@@ -179,6 +193,10 @@ namespace Middle
             {
                 ProcessLoopStatement(statement);
             }
+            else if (statement.StartsWith("switch"))
+            {
+                ProcessSwitchStatement(statement);
+            }
             else
             {
                 errors.Add("Error: Invalid syntax in statement: " + statement);
@@ -226,6 +244,63 @@ namespace Middle
         variables[variableName] = (variableType, value);
     }
 }
+        private void ProcessSwitchStatement(string statement)
+        {
+            int switchIndex = statement.IndexOf("switch");
+            int openParenIndex = statement.IndexOf('(', switchIndex);
+            int closeParenIndex = statement.IndexOf(')', openParenIndex);
+            string switchExpression = statement.Substring(openParenIndex + 1, closeParenIndex - openParenIndex - 1).Trim();
+
+            string switchValue = EvaluateExpression(switchExpression);
+
+            int openBraceIndex = statement.IndexOf('{', closeParenIndex);
+            int defaultIndex = statement.IndexOf("default", openBraceIndex);
+
+            // Extract only the cases block
+            string casesBlock = statement.Substring(openBraceIndex + 1, defaultIndex - openBraceIndex - 1).Trim();
+
+            string[] caseStatements = casesBlock.Split(new[] { "case" }, StringSplitOptions.RemoveEmptyEntries);
+
+            bool caseMatched = false;
+
+            foreach (string caseStmt in caseStatements)
+            {
+                string trimmedCase = caseStmt.Trim();
+                string caseValue = trimmedCase.Substring(0, trimmedCase.IndexOf(':')).Trim();
+
+                if (switchValue.Trim() == caseValue.Trim())
+                {
+                    int displayIndex = trimmedCase.IndexOf("display");
+                    if (displayIndex != -1)
+                    {
+                        int openParenIndexCase = trimmedCase.IndexOf('(', displayIndex);
+                        int closeParenIndexCase = trimmedCase.IndexOf(')', openParenIndexCase);
+                        string displayStatement = trimmedCase.Substring(openParenIndexCase + 1, closeParenIndexCase - openParenIndexCase - 1).Trim();
+
+                        DisplayOutput(displayStatement);
+                    }
+
+                    caseMatched = true;
+                    break;
+                }
+            }
+
+            if (!caseMatched && defaultIndex != -1)
+            {
+                string defaultBlock = statement.Substring(defaultIndex + 7).Trim();
+
+                int displayIndexDefault = defaultBlock.IndexOf("display");
+                if (displayIndexDefault != -1)
+                {
+                    int openParenIndexDefault = defaultBlock.IndexOf('(', displayIndexDefault);
+                    int closeParenIndexDefault = defaultBlock.IndexOf(')', openParenIndexDefault);
+                    string displayStatementDefault = defaultBlock.Substring(openParenIndexDefault + 1, closeParenIndexDefault - openParenIndexDefault - 1).Trim();
+
+                    DisplayOutput(displayStatementDefault);
+                }
+            }
+        }
+
 
         private void CheckStatementForErrors(string statement)
         {
