@@ -256,7 +256,7 @@ namespace Middle
             int openBraceIndex = statement.IndexOf('{', closeParenIndex);
             int defaultIndex = statement.IndexOf("default", openBraceIndex);
 
-            // Extract only the cases block
+       
             string casesBlock = statement.Substring(openBraceIndex + 1, defaultIndex - openBraceIndex - 1).Trim();
 
             string[] caseStatements = casesBlock.Split(new[] { "case" }, StringSplitOptions.RemoveEmptyEntries);
@@ -301,6 +301,35 @@ namespace Middle
             }
         }
 
+        private void CheckSwitchStatementForErrors(string statement)
+        {
+            int switchIndex = statement.IndexOf("switch");
+            int openParenIndex = statement.IndexOf('(', switchIndex);
+            int closeParenIndex = statement.IndexOf(')', openParenIndex);
+            string switchExpression = statement.Substring(openParenIndex + 1, closeParenIndex - openParenIndex - 1).Trim();
+
+            if (!EvaluateCondition(switchExpression))
+            {
+                errors.Add($"Error: Invalid switch expression '{switchExpression}'");
+            }
+
+            int openBraceIndex = statement.IndexOf('{', closeParenIndex);
+            int closeBraceIndex = statement.LastIndexOf('}');
+            string casesBlock = statement.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1).Trim();
+
+            string[] caseStatements = casesBlock.Split(new[] { "case", "default" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string caseStmt in caseStatements)
+            {
+                string trimmedCase = caseStmt.Trim();
+                List<string> statementsToCheck = ParseStatements(trimmedCase.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)).ToList();
+
+                foreach (string stmt in statementsToCheck)
+                {
+                    CheckStatementForErrors(stmt.Trim());
+                }
+            }
+        }
 
         private void CheckStatementForErrors(string statement)
         {
@@ -365,6 +394,18 @@ namespace Middle
             {
                 CheckIfElseStatementForErrors(statement);
             }
+            else if (statement.StartsWith("switch"))
+            {
+                CheckSwitchStatementForErrors(statement);
+            }
+            else if (statement.StartsWith("for"))
+            {
+                CheckForLoopStatementForErrors(statement);
+            }
+            else if (statement.StartsWith("loop"))
+            {
+                CheckLoopStatementForErrors(statement);
+            }
             else
             {
                 errors.Add("Error: Invalid syntax in statement: " + statement);
@@ -410,6 +451,24 @@ namespace Middle
                 x++; 
             }
         }
+        private void CheckForLoopStatementForErrors(string statement)
+        {
+            int forIndex = statement.IndexOf("for");
+            string condition = statement.Substring(forIndex + 3, statement.IndexOf('{') - forIndex - 3).Trim();
+            string loopBlock = statement.Substring(statement.IndexOf('{') + 1, statement.LastIndexOf('}') - statement.IndexOf('{') - 1).Trim();
+
+            if (!EvaluateCondition(condition))
+            {
+                errors.Add($"Error: Invalid for loop condition '{condition}'");
+            }
+
+            List<string> statementsToCheck = ParseStatements(loopBlock.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)).ToList();
+
+            foreach (string stmt in statementsToCheck)
+            {
+                CheckStatementForErrors(stmt.Trim());
+            }
+        }
 
         private void ProcessLoopStatement(string statement)
         {
@@ -432,7 +491,6 @@ namespace Middle
 
             string loopExpression = statement.Substring(startIndex + 1, endIndex - startIndex - 1).Trim();
 
-            // Handle the increment operation
             if (loopExpression.EndsWith("++"))
             {
                 string variableName = loopExpression.Replace("++", "").Trim();
@@ -440,9 +498,24 @@ namespace Middle
                 if (variables.ContainsKey(variableName) && variables[variableName].type == "num")
                 {
                     int currentValue = int.Parse(variables[variableName].value);
-                    currentValue++; // Increment the variable's value
+                    currentValue++; 
                     variables[variableName] = ("num", currentValue.ToString());
-                    // No need to display the incremented value here
+  
+                }
+                else
+                {
+                    errors.Add("Error: Undefined or invalid variable in loop statement: " + statement);
+                }
+            }
+            else if (loopExpression.EndsWith("--"))
+            {
+                string variableName = loopExpression.Replace("--", "").Trim();
+
+                if (variables.ContainsKey(variableName) && variables[variableName].type == "num")
+                {
+                    int currentValue = int.Parse(variables[variableName].value);
+                    currentValue--;
+                    variables[variableName] = ("num", currentValue.ToString());
                 }
                 else
                 {
@@ -455,6 +528,18 @@ namespace Middle
             }
         }
 
+        private void CheckLoopStatementForErrors(string statement)
+        {
+            int loopIndex = statement.IndexOf("loop");
+            string loopBlock = statement.Substring(statement.IndexOf('{') + 1, statement.LastIndexOf('}') - statement.IndexOf('{') - 1).Trim();
+
+            List<string> statementsToCheck = ParseStatements(loopBlock.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)).ToList();
+
+            foreach (string stmt in statementsToCheck)
+            {
+                CheckStatementForErrors(stmt.Trim());
+            }
+        }
 
 
         private void ProcessIfElseStatement(string statement)
@@ -494,6 +579,7 @@ namespace Middle
                 CheckStatementForErrors(stmt.Trim());
             }
         }
+
 
         private bool EvaluateCondition(string condition)
         {
